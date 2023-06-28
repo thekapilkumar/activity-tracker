@@ -1,7 +1,10 @@
 import React from 'react'
+import TodoForm from '../components/TodoForm'
 
 export default function Home() {
   return (
-    <div>Home</div>
+    <div className='home'>
+      <TodoForm />
+    </div>
   )
 }
