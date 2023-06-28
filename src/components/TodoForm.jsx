@@ -1,14 +1,15 @@
-import React from 'react'
-import { useState } from 'react'
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { Button, TextField } from '@mui/material';
-
+import React from "react";
+import { useState } from "react";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import { Button, TextField } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
+import { left, right } from "@popperjs/core";
 
 export default function TodoForm() {
-  const [items, setItems] = useState([{ item: '', text: '' }]);
+  const [items, setItems] = useState([{ item: "", text: "" }]);
   const handleChange = (index, event) => {
     const { name, value } = event.target;
     const newItems = [...items];
@@ -21,7 +22,13 @@ export default function TodoForm() {
   };
 
   const handleAddItem = () => {
-    setItems([...items, { item: '', text: '' }]);
+    setItems([...items, { item: "", text: "" }]);
+  };
+
+  const handleDelete = (index) => {
+    const newItems = [...items];
+    newItems.splice(index, 1);
+    setItems(newItems);
   };
 
   return (
@@ -29,6 +36,14 @@ export default function TodoForm() {
       <form onSubmit={handleSubmit}>
         {items.map((item, index) => (
           <div key={index}>
+            {items.length === 1 ? (
+              ""
+            ) : (
+              <ClearIcon
+                onClick={() => handleDelete(index)}
+                sx={{ float: "right" }}
+              />
+            )}
             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
               <InputLabel id={`item-label-${index}`}>Todo</InputLabel>
               <Select
@@ -57,14 +72,21 @@ export default function TodoForm() {
                 sx={{ my: 2 }}
               />
             </FormControl>
-
           </div>
         ))}
 
-        <Button variant="contained" type="submit" style={{ margin: "10px" }}>Submit</Button>
-        <Button variant="contained" type="button" color="success" onClick={handleAddItem}>Add</Button>
-
+        <Button variant="contained" type="submit" style={{ margin: "10px" }}>
+          Submit
+        </Button>
+        <Button
+          variant="contained"
+          type="button"
+          color="success"
+          onClick={handleAddItem}
+        >
+          Add
+        </Button>
       </form>
     </>
-  )
+  );
 }
