@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
 import EditSharpIcon from "@mui/icons-material/EditSharp";
 
-export default function TodoForm() {
+export default function TodoForm({setPieData}) {
   const [task, setTask] = useState("");
   const [description, setDescription] = useState("");
   const [todos, setTodos] = useState([]);
@@ -20,6 +20,7 @@ export default function TodoForm() {
       const result = await response.json();
       if (result.status) {
         setTodos(result.data);
+        setPieData(convertData(result.data))
       } else {
         console.error("Fetch todos error:", result.message);
       }
@@ -28,6 +29,23 @@ export default function TodoForm() {
     }
   };
 
+ const convertData=(data)=> {
+    const result = [];
+    const counts = {};
+  
+    // Count the occurrences of each task
+    for (let i = 0; i < data.length; i++) {
+      const task = data[i].task;
+      counts[task] = counts[task] ? counts[task] + 1 : 1;
+    }
+  
+    for (const task in counts) {
+      result.push([task, counts[task]]);
+    }
+  
+    return result;
+  }
+    
   const addTodo = async (event) => {
     event.preventDefault();
     try {
@@ -95,7 +113,7 @@ export default function TodoForm() {
   };
 
   return (
-    <>
+    <div>
       <form onSubmit={addTodo}>
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
           <InputLabel id="task-label">Todo</InputLabel>
@@ -145,6 +163,6 @@ export default function TodoForm() {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }
