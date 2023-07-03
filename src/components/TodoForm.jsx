@@ -4,15 +4,24 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { Button, TextField } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useEffect } from "react";
 import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
 import EditSharpIcon from "@mui/icons-material/EditSharp";
 
 export default function TodoForm({setPieData}) {
+
   const [task, setTask] = useState("");
   const [description, setDescription] = useState("");
   const [todos, setTodos] = useState([]);
+  const [isValueAdd, setIsValueAdd] = useState(false);
+  const initialValueAddChecks = {
+    check1: false,
+    check2: false,
+    check3: false,
+    check4: false
+  }
+  const [valueAddChecks, setValueAddChecks] = useState(initialValueAddChecks)
 
   const getTodo = async () => {
     try {
@@ -54,7 +63,9 @@ export default function TodoForm({setPieData}) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ task, description }),
+        body: isValueAdd? 
+          JSON.stringify({ task, description, valueAddChecks }):
+          JSON.stringify({ task, description })
       });
       if (!response.ok) {
         throw new Error("Error adding todo");
@@ -65,6 +76,8 @@ export default function TodoForm({setPieData}) {
         await getTodo();
         setTask("");
         setDescription("");
+        setValueAddChecks(initialValueAddChecks);
+        setIsValueAdd(false);
       } else {
         console.error("Add todo error:", result.message);
       }
@@ -101,10 +114,15 @@ export default function TodoForm({setPieData}) {
   const updateTodo = () => {};
 
   useEffect(() => {
+    console.log(valueAddChecks)
     getTodo();
-  }, []);
+  }, [valueAddChecks]);
 
   const handleTaskChange = (event) => {
+    if(event.target.value === "Value Adds")
+      setIsValueAdd(true);
+    else 
+      setIsValueAdd(false);
     setTask(event.target.value);
   };
 
@@ -139,9 +157,63 @@ export default function TodoForm({setPieData}) {
             sx={{ my: 2 }}
             onChange={handleDescriptionChange}
           />
+          { 
+            isValueAdd?
+            <div>
+              <FormControlLabel control={
+                <Checkbox 
+                  checked={valueAddChecks.check1}
+                  onChange={() => setValueAddChecks(preState =>{ 
+                    return {
+                      ...preState,
+                      check1: !preState.check1, 
+                    }
+                    })} 
+                />
+              } 
+              label="Test1" />
+              <FormControlLabel 
+                control={
+                  <Checkbox  
+                    checked={valueAddChecks.check2}
+                    onChange={() => setValueAddChecks(preState =>{ 
+                        return {
+                          ...preState,
+                          check2: !preState.check2, 
+                        }
+                      })} 
+                  />} 
+                label="Test2" />
+              <FormControlLabel 
+                control={
+                  <Checkbox  
+                    checked={valueAddChecks.check3}
+                    onChange={() => setValueAddChecks(preState =>{ 
+                        return {
+                          ...preState,
+                          check3: !preState.check3, 
+                        }
+                      })} 
+                  />} 
+                label="Test3" />
+              <FormControlLabel 
+                control={
+                  <Checkbox  
+                    checked={valueAddChecks.check4}
+                    onChange={() => setValueAddChecks(preState =>{ 
+                        return {
+                          ...preState,
+                          check4: !preState.check4, 
+                        }
+                      })} 
+                  />} 
+                label="Test4" />
+            </div>:""
+          }
           <Button variant="contained" type="submit" style={{ margin: "10px" }}>
             Add
           </Button>
+
         </FormControl>
       </form>
 
