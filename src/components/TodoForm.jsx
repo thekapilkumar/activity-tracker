@@ -6,8 +6,10 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useEffect } from "react";
-import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
-import EditSharpIcon from "@mui/icons-material/EditSharp";
+
+import ActionItems from "./ActionItems";
+import ValueAdds from "./ValueAdds";
+import ProjectScopes from "./ProjectScopes";
 
 export default function TodoForm({setPieData}) {
 
@@ -114,9 +116,8 @@ export default function TodoForm({setPieData}) {
   const updateTodo = () => {};
 
   useEffect(() => {
-    console.log(valueAddChecks)
     getTodo();
-  }, [valueAddChecks]);
+  }, []);
 
   const handleTaskChange = (event) => {
     if(event.target.value === "Value Adds")
@@ -219,21 +220,12 @@ export default function TodoForm({setPieData}) {
 
       <div>
         <h2>Todo List</h2>
-        {todos.map((todo, index) => (
-          <div key={index}>
-            <p>
-              <strong>Task:</strong>{" "}
-              <span style={{ margin: "10px" }}> {todo.task} </span>
-              <strong>Description:</strong>{" "}
-              <span style={{ margin: "10px" }}>{todo.description}</span>
-              <strong>Actions:</strong>{" "}
-              <span style={{ margin: "10px" }}>
-                <DeleteSharpIcon onClick={() => deletedTodo(todo._id)} />
-                <EditSharpIcon onClick={updateTodo} />
-              </span>
-            </p>
-          </div>
-        ))}
+        <ActionItems actionItems={todos.filter((item) => item.task === "Action Items")} 
+          deletedTodo = {deletedTodo} updateTodo = {updateTodo} />
+        <ProjectScopes ValueAdds projectScopes={todos.filter((item) => item.task === "Project Scope")} 
+          deletedTodo = {deletedTodo} updateTodo = {updateTodo}/>
+        <ValueAdds valueAdds={todos.filter((item) => item.task === "Value Adds")} 
+          deletedTodo = {deletedTodo} updateTodo = {updateTodo}/>
       </div>
     </div>
   );
