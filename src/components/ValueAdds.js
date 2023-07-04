@@ -1,12 +1,43 @@
 import React from 'react'
 import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
 import EditSharpIcon from "@mui/icons-material/EditSharp";
+import { PieChart } from './PieChart';
 
 const ValueAdds = ({valueAdds, deletedTodo, updateTodo}) => {
+  const convertData=(data)=> {
+    const result = [];
+    const counts = {
+      check1: 0,
+      check2: 0,
+      check3: 0,
+      check4: 0
+    };
+    // Count the occurrences of each task
+    data.forEach( item => {
+      if(item.valueAddChecks.check1)
+        counts["check1"] += 1
+      if(item.valueAddChecks.check2)
+        counts["check2"] += 1
+      if(item.valueAddChecks.check3)
+        counts["check3"] += 1
+      if(item.valueAddChecks.check4)
+        counts["check4"] += 1
+    })
+    for (const check in counts) {
+      result.push([check, counts[check]]);
+    }
+  
+    return result;
+  }
 
   return (
     <div>
       <h3>Value Adds</h3>
+      <div style={{width:'50%'}}>
+        <PieChart pieData={convertData(valueAdds)}/>
+      </div>
+      <div style={{width:'50%'}}>
+
       {
         valueAdds.map((todo, index) => {
           const checks = []
@@ -38,6 +69,7 @@ const ValueAdds = ({valueAdds, deletedTodo, updateTodo}) => {
         )})
 
       }
+      </div>
     </div>
   )
 }
