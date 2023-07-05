@@ -17,6 +17,9 @@ export default function TodoForm({setPieData}) {
   const [description, setDescription] = useState("");
   const [todos, setTodos] = useState([]);
   const [isValueAdd, setIsValueAdd] = useState(false);
+  const [isActionItem, setIsActionItem] = useState(false);
+  const initialActionItemStatus = "Not Started"
+  const [actionItemStatus, setActionItemStatus] = useState(initialActionItemStatus);
   const initialValueAddChecks = {
     check1: false,
     check2: false,
@@ -66,7 +69,9 @@ export default function TodoForm({setPieData}) {
           "Content-Type": "application/json",
         },
         body: isValueAdd? 
-          JSON.stringify({ task, description, valueAddChecks }):
+            JSON.stringify({ task, description, valueAddChecks }):
+          isActionItem? 
+            JSON.stringify({ task, description, actionItemStatus }):
           JSON.stringify({ task, description })
       });
       if (!response.ok) {
@@ -80,6 +85,8 @@ export default function TodoForm({setPieData}) {
         setDescription("");
         setValueAddChecks(initialValueAddChecks);
         setIsValueAdd(false);
+        setIsActionItem(false);
+        setActionItemStatus(initialActionItemStatus)
       } else {
         console.error("Add todo error:", result.message);
       }
@@ -121,9 +128,19 @@ export default function TodoForm({setPieData}) {
 
   const handleTaskChange = (event) => {
     if(event.target.value === "Value Adds")
+    {
       setIsValueAdd(true);
-    else 
+      setIsActionItem(false);
+    }
+    else if ( event.target.value === "Action Items")
+    {
       setIsValueAdd(false);
+      setIsActionItem(true);
+    }
+    else {
+      setIsValueAdd(false);
+      setIsActionItem(false);
+    }
     setTask(event.target.value);
   };
 
@@ -209,7 +226,34 @@ export default function TodoForm({setPieData}) {
                       })} 
                   />} 
                 label="Test4" />
-            </div>:""
+            </div>
+            :
+            isActionItem?
+            <div>
+              <FormControlLabel control={
+                <Checkbox 
+                  value={"not started"}
+                  checked={actionItemStatus === "Not Started"}
+                  onChange={ e => setActionItemStatus("Not Started")} 
+                />
+              } 
+              label="Not Started" />
+              <FormControlLabel 
+                control={
+                  <Checkbox  
+                    checked={actionItemStatus === "In Progress"}
+                    onChange={ e => setActionItemStatus("In Progress" )}
+                  />} 
+                label="In Progress" />
+              <FormControlLabel 
+                control={
+                  <Checkbox  
+                    checked={actionItemStatus === "Completed"}
+                    onChange={ e => setActionItemStatus("Completed")}
+                  />} 
+                label="Completed" />
+            </div>
+            :""
           }
           <Button variant="contained" type="submit" style={{ margin: "10px" }}>
             Add
@@ -220,12 +264,23 @@ export default function TodoForm({setPieData}) {
 
       <div>
         <h2>Todo List</h2>
-        <ActionItems actionItems={todos.filter((item) => item.task === "Action Items")} 
-          deletedTodo = {deletedTodo} updateTodo = {updateTodo} />
-        <ProjectScopes ValueAdds projectScopes={todos.filter((item) => item.task === "Project Scope")} 
-          deletedTodo = {deletedTodo} updateTodo = {updateTodo}/>
-        <ValueAdds valueAdds={todos.filter((item) => item.task === "Value Adds")} 
-          deletedTodo = {deletedTodo} updateTodo = {updateTodo}/>
+        <div>
+          <div style={{ flex: 1, margin: "10px" }}>
+            <ActionItems actionItems={todos.filter((item) => item.task === "Action Items")} 
+              deletedTodo = {deletedTodo} updateTodo = {updateTodo} />
+          </div>
+          
+          <div>
+            <ProjectScopes ValueAdds projectScopes={todos.filter((item) => item.task === "Project Scope")} 
+              deletedTodo = {deletedTodo} updateTodo = {updateTodo}/>
+          </div>
+
+          <div>
+            <ValueAdds valueAdds={todos.filter((item) => item.task === "Value Adds")} 
+              deletedTodo = {deletedTodo} updateTodo = {updateTodo}/>
+          </div>
+        </div> 
+
       </div>
     </div>
   );
